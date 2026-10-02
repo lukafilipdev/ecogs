@@ -1,26 +1,150 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ------------------------------------------------------------------ */
+/* Design tokens                                                       */
+/* ------------------------------------------------------------------ */
+
+@theme {
+  --breakpoint-nav: 860px;
+
+  /* Dark surfaces */
+  --color-ink: #1c1322;
+  --color-ink-deep: #150e1a;
+  --color-night: #2a1d33;
+  --color-night-stripe: #30223a;
+  --color-night-line: #3a2c45;
+  --color-night-rule: #2e2138;
+  --color-hero-rule: #6d5f78;
+
+  /* Light surfaces */
+  --color-cream: #f7f4ef;
+  --color-sand: #e6dfd5;
+  --color-mist: #eee8f2;
+  --color-haze: #dcd3e3;
+  --color-lavender: #d8cbe2;
+  --color-lilac: #cdb8dd;
+
+  /* Brand */
+  --color-plum: #7b4b94;
+  --color-plum-dark: #5e3574;
+  --color-plum-soft: #9562a9;
+  --color-plum-glow: #b48fc9;
+
+  /* Text */
+  --color-prose: #2f2636;
+  --color-copy: #3b3242;
+  --color-muted: #5e5766;
+  --color-muted-light: #b9adc3;
+  --color-copy-light: #d6ccdd;
+
+  /* Rules & borders */
+  --color-rule: #e4dee8;
+  --color-rule-soft: #ddd5e2;
+  --color-rule-strong: #cfc5d6;
+  --color-input: #bfb4c8;
+
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.1, 1);
+  --ease-mask: cubic-bezier(0.7, 0, 0.15, 1);
+  --ease-menu: cubic-bezier(0.77, 0, 0.18, 1);
+  --ease-line: cubic-bezier(0.7, 0, 0.2, 1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-cream font-sans text-ink antialiased;
+    overflow-x: hidden;
+  }
+
+  a {
+    @apply text-plum transition-colors hover:text-plum-dark;
+  }
+
+  ::selection {
+    @apply bg-lavender text-ink;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+      animation: none !important;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------------ */
+/* Scroll reveal                                                       */
+/* Elements opt in with data-reveal="up|line|mask|zoom|fade".          */
+/* Hidden states only apply once JS is confirmed (html.js), so content */
+/* stays visible without JavaScript or with reduced motion.            */
+/* ------------------------------------------------------------------ */
+
+@layer components {
+  @media (prefers-reduced-motion: no-preference) {
+    .js [data-reveal] {
+      --reveal-delay: 0ms;
+    }
+
+    .js [data-reveal="up"] {
+      opacity: 0;
+      transform: translateY(34px);
+      transition:
+        opacity 1s var(--ease-out-soft) var(--reveal-delay),
+        transform 1.2s var(--ease-out-soft) var(--reveal-delay);
+    }
+
+    .js [data-reveal="line"] {
+      transform: translateY(108%);
+      transition: transform 1.3s var(--ease-mask) var(--reveal-delay);
+    }
+
+    .js [data-reveal="mask"] {
+      clip-path: inset(100% 0 0 0);
+      transition: clip-path 1.5s var(--ease-mask) var(--reveal-delay);
+    }
+
+    .js [data-reveal="zoom"] {
+      opacity: 0;
+      transform: scale(1.14);
+      transition:
+        transform 3s var(--ease-out-soft) var(--reveal-delay),
+        opacity 1.4s ease var(--reveal-delay);
+    }
+
+    .js [data-reveal="fade"] {
+      opacity: 0;
+      transition: opacity 1.2s ease var(--reveal-delay);
+    }
+
+    .js [data-reveal][data-revealed] {
+      opacity: 1;
+      transform: none;
+    }
+
+    .js [data-reveal="mask"][data-revealed] {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }

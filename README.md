@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ECOGS Gornji Slaveči — website
 
-## Getting Started
+Website of the Evangeličanska cerkvena občina Gornji Slaveči, built with
+Next.js 16 (App Router), React 19, TypeScript and Tailwind CSS v4.
 
-First, run the development server:
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Script              | Purpose                          |
+| ------------------- | -------------------------------- |
+| `npm run build`     | Production build (fully static)  |
+| `npm run lint`      | ESLint                           |
+| `npm run typecheck` | TypeScript                       |
+| `npm run format`    | Prettier (+ Tailwind class sort) |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Set `NEXT_PUBLIC_SITE_URL` in production so canonical URLs, Open Graph,
+sitemap and share links use the real domain.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Structure
 
-## Learn More
+```
+src/
+  app/                  Routes (each page composes sections)
+    novice/[slug]/      Article pages, statically generated
+    kontakt/actions.ts  Contact form Server Action
+    sitemap.ts, robots.ts
+  components/
+    layout/             Header, mobile menu, footer
+    motion/             Scroll reveal/parallax driver, reading progress
+    news/               Article cards, archive, article body, sharing
+    sections/<page>/    Page-specific sections
+    ui/                 Design-system primitives (Button, Container, …)
+  content/              Typed site content (CMS-ready data)
+  lib/                  Data access, formatting and helpers
+  assets/               Photos and logos (statically imported)
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Conventions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Server Components by default.** Only interactive pieces are client
+  components: header/menu, community-life switcher, news filter, share
+  buttons, contact form and the motion driver.
+- **Content is data.** All copy that changes over time lives in
+  `src/content`. Pages read news only through `src/lib/news.ts`, so moving
+  articles to a CMS means changing that one file.
+- **Design tokens** (colours, easing, the `nav` 860px breakpoint) are defined
+  once in `src/app/globals.css` under `@theme`.
+- **Animations are declarative.** Spread `reveal("up", delay)` or
+  `parallax(speed)` from `src/lib/reveal.ts` onto any element; a single
+  `<MotionEffects />` handles every page. Content stays visible without
+  JavaScript and with `prefers-reduced-motion`.
+- **News filter state lives in the URL** (`/novice?kategorija=mladina`), so
+  filtered views can be shared.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Open items
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Contact form delivery:** `src/app/kontakt/actions.ts` validates and logs
+  messages; connect an email provider in `deliverContactMessage`.
+- **Pastor photo:** pass `photo` to `<PastorSection />` once available.
+- **Privacy / cookie pages:** footer links in `src/content/site.ts` point to
+  `/` until those pages exist.
